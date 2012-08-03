@@ -177,43 +177,24 @@ Rake tasks
 
 bundle exec rake -T
 
-    rake build         # Build mutagem-0.0.1.gem into the pkg directory
-    rake doc:clean     # Remove generated documenation
-    rake doc:generate  # Generate YARD Documentation
-    rake features      # Run Cucumber features
-    rake install       # Build and install mutagem-0.0.1.gem into system gems
-    rake release       # Create tag v0.0.1 and build and push mutagem-0.0.1.gem to Rubygems
-    rake spec          # Run specs
-    rake test          # Run specs and features
+    rake build             # Build basic_gem-0.0.2.gem into the pkg directory
+    rake cucumber          # Run Cucumber features
+    rake doc:clean         # Remove generated documenation
+    rake doc:generate      # Generate YARD Documentation
+    rake doc:undocumented  # List undocumented objects
+    rake gemfiles          # Generate .gemfiles via 'git ls-files'
+    rake install           # Build and install basic_gem-0.0.2.gem into system gems
+    rake release           # Create tag v0.0.2 and build and push basic_gem-0.0.2.gem to Rubygems
+    rake spec              # Run RSpec
+    rake test              # Run specs, both RSpec and Cucumber
 
+Autotesting with Guard
+----------------------
 
-Autotesting with Watchr
--------------------------
-
-[Watchr](http://github.com/mynyml/watchr) provides a flexible alternative to Autotest.  A
-jump start script is provided in spec/watchr.rb.
-
-### Install watchr ###
-
-    gem install watchr
-
-### Run watchr ###
-
-    watchr spec/watchr.rb
-
-outputs a menu
-
-    Ctrl-\ for menu, Ctrl-C to quit
-
-Watchr will now watch the files defined in 'spec/watchr.rb' and run Rspec or Cucumber, as appropriate.
-The watchr script provides a simple menu.
-
-Ctrl-\
-
-    MENU: a = all , f = features  s = specs, l = last feature (none), q = quit
+    bundle exec guard
 
 
 Copyright
 ---------
 
-Copyright (c) 2010-2011 GearheadForHire, LLC. See [LICENSE](LICENSE) for details.
+Copyright (c) 2010-2012 GearheadForHire, LLC. See [LICENSE](LICENSE) for details.
