@@ -2,6 +2,11 @@ require 'spec_helper'
 
 describe BasicApp::BaseAsset  do
 
+  before :all do
+    #Condenser::Logger::Manager.new
+    #Logging.appenders.stdout.level = :debug
+  end
+
   describe 'self.path_to_name' do
 
     it "should replace one or more whitespace chars with a single underscore" do
@@ -59,6 +64,12 @@ describe BasicApp::BaseAsset  do
         @asset.description.should == "This is a test_asset"
       end
 
+      it "should render ERB" do
+        @asset.description = "This is a <%= name %>"
+        @asset.attributes[:description].should == "This is a <%= name %>"
+        @asset.description.should == "This is a test_asset"
+      end
+
     end
 
     describe 'notes' do
@@ -71,6 +82,12 @@ describe BasicApp::BaseAsset  do
       it "should render mustache templates" do
         @asset.notes = "This is a {{name}}"
         @asset.attributes[:notes].should == "This is a {{name}}"
+        @asset.notes.should == "This is a test_asset"
+      end
+
+      it "should render ERB" do
+        @asset.notes = "This is a <%= name %>"
+        @asset.attributes[:notes].should == "This is a <%= name %>"
         @asset.notes.should == "This is a test_asset"
       end
 
@@ -106,6 +123,12 @@ describe BasicApp::BaseAsset  do
       it "should render mustache templates" do
         @asset.path = "test/{{name}}/here"
         @asset.attributes[:path].should == "test/{{name}}/here"
+        @asset.path.should match(/^#{File.expand_path(FileUtils.pwd)}\/test\/test_asset\/here$/)
+      end
+
+      it "should render ERB" do
+        @asset.path = "test/<%= name %>/here"
+        @asset.attributes[:path].should == "test/<%= name %>/here"
         @asset.path.should match(/^#{File.expand_path(FileUtils.pwd)}\/test\/test_asset\/here$/)
       end
 
@@ -148,6 +171,17 @@ describe BasicApp::BaseAsset  do
           lambda {asset.undefined_attribute = 1}.should raise_error  NoMethodError
           asset.undefined_attribute.should == "foo bar"
         end
+
+        it "should render Mustache templates" do
+          asset = Condenser::BaseAsset.new("test_asset", {:notes => "hello world", :new_attribute => "{{notes}}"})
+          asset.new_attribute.should == "hello world"
+        end
+
+        it "should render ERB" do
+          asset = Condenser::BaseAsset.new("test_asset", {:new_attribute => "<%= 'hello world' %>"})
+          asset.new_attribute.should == "hello world"
+        end
+
       end
 
     end
@@ -200,6 +234,76 @@ describe BasicApp::BaseAsset  do
 
         asset.undefined_attribute = "1"
         asset.attributes[:undefined_attribute].should == "1"
+      end
+
+    end
+
+  end
+
+  describe "parent defined attributes" do
+
+    before :each do
+      FileUtils.rm_rf(current_dir)
+
+      parent = <<-PARENT.unindent
+        ---
+        description: "{{path}}"
+        notes: <%= File.basename(path) %>
+        dog: lassie
+        my_thing: <%%= thing %>
+        thing: simple text
+      PARENT
+
+      config = <<-CONFIG.unindent
+        ---
+        parent: ./parent
+        path: "my/path"
+        dog: spot
+      CONFIG
+
+      write_file('parent/asset.conf', parent)
+      write_file('test/asset.conf', config)
+    end
+
+    it "should not overwrite existing attributes" do
+      asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+      asset.attributes[:dog].should == "spot"
+      asset.dog.should == "spot"
+
+      asset.attributes[:path].should == "my/path"
+      asset.path.should match(/.*\/my\/path$/)
+    end
+
+    describe "rendering" do
+
+      it "should render simple strings" do
+        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset.attributes[:thing].should == "simple text"
+        asset.thing.should == "simple text"
+      end
+
+      it "should render mustache templates" do
+        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset.path.should match(/.*\/my\/path$/)
+
+        asset.attributes[:description].should == "{{path}}"
+        asset.description.should match(/.*\/my\/path$/)
+
+      end
+
+      it "should render ERB on initial load" do
+        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset.attributes[:notes].should == "path"
+
+        asset.path.should match(/.*\/my\/path$/)
+        asset.notes.should == "path"
+      end
+
+      it "should render escaped ERB" do
+        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+
+        asset.attributes[:my_thing].should == "<%= thing %>"
+        asset.my_thing.should == "simple text"
       end
 
     end

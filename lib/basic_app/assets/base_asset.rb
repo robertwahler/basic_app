@@ -62,7 +62,9 @@ module BasicApp
         # paths can be relative to cwd
         path = File.join(File.expand_path(FileUtils.pwd), path) if (!Pathname.new(path).absolute?)
       end
-      @path = path
+
+      @path = path unless loading
+      path
     end
     def path=(value)
       @path = nil
@@ -132,10 +134,19 @@ module BasicApp
     # @param [String/Symbol] asset_name_or_folder (nil) if folder exists, will load YAML config
     # @param [Hash] attributes ({}) initial attributes
     def initialize(asset_name_or_folder=nil, attributes={})
+      # counter is incremented when asset is loading from file system
+      @loading_counter = 0
+
       # allow for lazy loading (TODO), don't assign empty attributes
       @attributes = attributes.deep_clone unless attributes.empty?
 
       # create user_attribute methods
+      #
+      # NOTE:
+      #
+      # This is only needed for writeable attributes, for rendering, just use the
+      # simple method_missing For simple variable replacement, there is no need
+      # to predefine the Mustache tag variables. See user_attributes.feature.
       create_accessors(@attributes[:user_attributes]) if @attributes && @attributes[:user_attributes]
 
       return unless asset_name_or_folder
@@ -143,8 +154,8 @@ module BasicApp
       folder = asset_name_or_folder.to_s
       @name = File.basename(folder)
 
-      logger.debug "Asset name: #{name}"
-      logger.debug "Asset configuration folder: #{folder}"
+      #logger.debug "Asset name: #{name}"
+      #logger.debug "Asset configuration folder: #{folder}"
 
       if File.exists?(folder)
         logger.debug "initializing new asset with folder: #{folder}"
@@ -156,9 +167,26 @@ module BasicApp
       @configuration ||= BasicApp::AssetConfiguration.new(self)
     end
 
+    # @return [Boolean] true when asset is loading from file system, includes parent assets
+    def loading
+      @loading_counter > 0
+    end
+
+    def loading=(value)
+      if value
+        @loading_counter += 1
+      else
+        @loading_counter -= 1
+      end
+    end
+
     # attributes is the hash loaded from the asset config file
     def attributes
       @attributes ||= {}
+    end
+
+    def attributes=(value)
+      @attributes = value
     end
 
     def to_hash
@@ -178,14 +206,28 @@ module BasicApp
     # @return [String/nil] with mustache tags replaced or nil if template is nil
     def render(template)
       return nil unless template
+      return template unless template.is_a?(String)
 
-      Mustache.render(template, self)
+      begin
+        result = ERB.new(template).result(get_binding)
+      rescue Exception => e
+        raise ErbTemplateError, e.message
+      end
+
+      begin
+        result = Mustache.render(result, self)
+      rescue Exception => e
+        logger.error "render mustache failed with: '#{e.message}'"
+        raise MustacheTemplateError, e.message
+      end
+
+      result
     end
 
-    # support for Mustache rendering of ad hoc user defined variables
+    # support for Mustache/ERB rendering of ad hoc user defined variables
     # if the key exists in the hash, use if for a lookup
     def method_missing(name, *args, &block)
-      return attributes[name.to_sym] if attributes.include?(name.to_sym)
+      return render(attributes[name.to_sym]) if attributes.include?(name.to_sym)
       return super
     end
 
@@ -194,6 +236,5 @@ module BasicApp
       return true if attributes.include?(name.to_sym)
       super
     end
-
   end
 end

@@ -10,12 +10,14 @@ require 'pathname'
 require 'slim'
 require 'erb'
 require 'chronic'
+require 'condenser/views/view_helper'
 
 module BasicApp
 
   # An abstract superclass for basic view/reporting functionality
   # using templates
   class BaseView
+    include Condenser::ViewHelper
 
     def initialize(items, configuration={})
       @configuration = configuration.deep_clone
@@ -103,7 +105,11 @@ module BasicApp
       case extension
         when '.erb'
           contents = File.open(template, "r") {|f| f.read}
-          ERB.new(contents, nil, '-').result(self.get_binding)
+          begin
+            ERB.new(contents, nil, '-').result(self.get_binding)
+          rescue Exception => e
+            raise ErbTemplateError, e.message
+          end
         when '.slim'
           Slim::Template.new(template, {:pretty => true}).render(self)
         else

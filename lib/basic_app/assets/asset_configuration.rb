@@ -65,32 +65,43 @@ module BasicApp
     def load(ds=nil)
       @folder ||= ds
 
-      contents = load_contents(folder)
+      @asset.loading = true
+      begin
+        contents = load_contents(folder)
+        #logger.debug "contents: " + contents.inspect
 
-      # if a global parent folder is defined, load it first
-      parent = contents.delete(:parent) || parent
-      if parent
-        parent_folder = File.join(parent)
-        unless Pathname.new(parent_folder).absolute?
-          base_folder = File.dirname(folder)
-          parent_folder = File.join(base_folder, parent_folder)
+        # the 'parent' setting is not merged to attributes
+        parent = contents.delete(:parent) || parent
+
+        # initial contents, allows parents to access raw attributes
+        # using simple merge to allow parent to overwrite instead of combine
+        @asset.attributes = @asset.attributes.merge(contents)
+
+        if parent
+          parent_folder = File.join(parent)
+          unless Pathname.new(parent_folder).absolute?
+            base_folder = File.dirname(folder)
+            parent_folder = File.join(base_folder, parent_folder)
+          end
+
+          #logger.debug "AssetConfiguration loading parent: #{parent_folder}"
+          parent_configuration = Condenser::AssetConfiguration.new(@asset)
+
+          begin
+            parent_configuration.load(parent_folder)
+          rescue Exception => e
+            logger.warn "AssetConfiguration parent configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
+          end
         end
 
-        logger.debug "AssetConfiguration loading parent: #{parent_folder}"
-        parent_configuration = BasicApp::AssetConfiguration.new(asset)
+        # combine is a deep merge with array smarts
+        @asset.attributes = combine_contents(@asset.attributes, contents)
+        @asset.create_accessors(@asset.attributes[:user_attributes])
 
-        begin
-          parent_configuration.load(parent_folder)
-        rescue Exception => e
-          logger.warn "AssetConfiguration parent configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
-        end
+      ensure
+        @asset.loading = false
       end
 
-      # Load all attributes as hash 'attributes' so that merging
-      # and adding new attributes doesn't require code changes. Note
-      # that the 'parent' setting is not merged to attributes
-      @asset.attributes.merge!(contents)
-      @asset.create_accessors(@asset.attributes[:user_attributes])
       @asset
     end
 
@@ -103,13 +114,60 @@ module BasicApp
 
     private
 
+    # Merges new_hash into old_hash returning the modified hash. Doesn't
+    # modify params.
+    #
+    # NOTE: special handling for arrays of hashes with an :id (i.e. targets)
+    #
+    # @return [Hash] the combined hash
+    def combine_contents(old_hash, new_hash)
+      old_hash.merge(new_hash) do |key, old, new|
+        if new.respond_to?(:blank) && new.blank?
+           old
+        elsif (old.kind_of?(Hash) and new.kind_of?(Hash))
+           combine_contents(old, new)
+        elsif (old.kind_of?(Array) and new.kind_of?(Array))
+           new_array = old.concat(new).uniq
+           # handle positional id hashes (targets)
+           if new_array.first.is_a?(Hash) && new_array.first.has_key?(:id)
+
+             id_order = []
+             new_array.each do |a|
+               id_order << a[:id]
+             end
+
+             new_array = new_array.group_by {|x| x[:id]}.map do |k,v|
+               v.inject(:merge)
+             end
+
+             sorted_array = []
+             id_order.uniq.each do |id|
+               sorted_array << new_array.find {|n| n[:id] == id}
+             end
+             sorted_array
+
+           else
+             new_array
+           end
+        else
+           new
+        end
+      end
+    end
+
     # load the raw contents from an asset_folder, ignore parents
     #
     # @return [Hash] of the raw text contents
     def load_contents(asset_folder)
       file = File.join(asset_folder, 'asset.conf')
       if File.exists?(file)
-        contents = YAML.load(ERB.new(File.open(file, "rb").read).result(@asset.get_binding))
+        contents = YAML.load(
+          begin
+            ERB.new(File.open(file, "rb").read).result(@asset.get_binding)
+          rescue Exception => e
+            raise ErbTemplateError, e.message
+          end
+        )
         if contents && contents.is_a?(Hash)
           contents.recursively_symbolize_keys!
         else

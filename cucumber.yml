@@ -9,6 +9,7 @@
   opts << ["-r features"]
   opts << ["--no-profile"]
   opts << ["--tags ~@wip"]
+  opts << ["--tags ~@manual"]
   opts << ["--tags ~@windows"] unless WINDOWS
   opts << ["--tags ~@posix"] if WINDOWS
 

@@ -5,6 +5,28 @@ require 'fileutils'
 module BasicApp
   module ActionHelper
 
+    def ruby_binary(opt={:flags => [:no_console_window]})
+      flags = opt[:flags] || []
+      path = File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
+
+      # Childprocess/CreateProcess on Windows treats .exe different than other binaries.
+      # To avoid using cmd.exe to lanuch Ruby, make sure an exe extension is set.  See
+      # the Childprocess source for more information
+      if flags.include?(:no_console_window) && windows?
+        binary = File.basename(path)
+        dirname = File.dirname(path)
+        wpath = File.join(dirname, 'ruby.exe')
+        if File.exists?(wpath)
+          path = wpath
+          logger.debug "setting windows ruby.exe binary"
+        else
+          logger.warn "unable to set windows ruby.exe binary"
+        end
+      end
+
+      path
+    end
+
     def shell_quote(string)
       return "" if string.nil? or string.empty?
       if windows?

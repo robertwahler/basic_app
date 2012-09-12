@@ -2,10 +2,12 @@ require 'pathname'
 require 'rbconfig'
 require 'basic_app'
 require 'basic_app/actions/action_helper'
+require 'condenser/views/view_helper'
 
 module BasicApp
   module ThorHelper
     include ::BasicApp::ActionHelper
+    include ::Condenser::ViewHelper
 
     # main basic_app configuration setttings file
     def configuration(configuration_file=nil)
@@ -19,10 +21,6 @@ module BasicApp
     def configuration=(value={})
       logger.debug "setting basic_app configuration"
       @configuration = value.deep_clone
-    end
-
-    def ruby_binary
-      File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
     end
 
   end
