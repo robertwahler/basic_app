@@ -73,7 +73,7 @@ task :gemfiles do
   files = `git ls-files`
 
   exclude.each do |regex|
-    files = files.reject{ |s| regex =~ s }.join
+    files = files.split.reject{ |s| regex =~ s }.join("\n")
   end
 
   filename  = File.join(File.dirname(__FILE__), '.gemfiles')
