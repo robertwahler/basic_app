@@ -17,6 +17,9 @@ module BasicApp
     include BasicApp::AssetAccessors
     extend BasicApp::AssetAccessors
 
+    # an array of raw asset folders that have been processed for metadata
+    attr_accessor :parents
+
     #
     # --- Asset attributes START here ---
     #
@@ -134,6 +137,10 @@ module BasicApp
     # @param [String/Symbol] asset_name_or_folder (nil) if folder exists, will load YAML config
     # @param [Hash] attributes ({}) initial attributes
     def initialize(asset_name_or_folder=nil, attributes={})
+
+      # track each metadata folder read to build this asset
+      @parents = []
+
       # counter is incremented when asset is loading from file system
       @loading_counter = 0
 

@@ -20,14 +20,7 @@ Feature: Asset configuration
       folders:
         assets : data
 
-  Example with parent: config/data/assets/asset1/asset.conf:
-
-      ---
-      parent    : ../../global/assets/asset1
-      acquired  : 01/01/2011
-      launched  : 01/01/2011
-
-  Example without parent: config/data/assets/asset1/asset.conf:
+  Example config/data/assets/asset1/asset.conf:
 
       ---
       acquired  : 01/01/2011
@@ -113,20 +106,59 @@ Feature: Asset configuration
       path: user_path
       """
 
-  Scenario: Parent configuration fills in missing items with ERB evaluation
+  Scenario: Default asset '000default' configuration fills in missing items with ERB evaluation
     Given a file named "basic_app.conf" with:
       """
       ---
       folders:
-        assets      : data/app_assets
+        assets: data/app_assets
       """
-    And the folder "global/app_assets" with the following asset configurations:
-      | name         | path          | icon                      |
-      | default      | set_by_parent | based_on_<%= name %>.png  |
-    And the folder "data/app_assets" with the following asset configurations:
-      | name         | parent                           | binary          |
-      | asset1       | ../../global/app_assets/default  | path_to/bin.exe |
-    When I run `basic_app list --type=app_asset`
+    And a file named "data/app_assets/000default/asset.conf" with:
+      """
+      ---
+      path: set_by_parent
+      icon: based_on_<%= name %>.png
+      """
+    And a file named "data/app_assets/asset1/asset.conf" with:
+      """
+      ---
+      binary: path_to/bin.exe
+      """
+    When I run `basic_app list --type=app_asset --verbose`
+    Then the exit status should be 0
+    And its output should not match /^WARN/
+    And the output should contain:
+      """
+      path: set_by_parent
+      """
+    And the output should contain:
+      """
+      icon: based_on_asset1.png
+      """
+
+  @wip
+  Scenario: Multiple parent metadata folders defined in the default asset
+    Given a file named "basic_app.conf" with:
+      """
+      ---
+      folders:
+        assets: data/app_assets
+      """
+    And a file named "data/app_assets/000default/asset.conf" with:
+      """
+      ---
+      metadata:
+      - metadata/global
+      - metadata/lang/en
+      path: set_by_parent
+      icon: based_on_<%= name %>.png
+      """
+    And a file named "data/app_assets/asset1/asset.conf" with:
+      """
+      ---
+      binary: path_to/bin.exe
+      """
+    When I run `basic_app list --type=app_asset --verbose`
     Then the exit status should be 0
     And its output should not match /^WARN/
     And the output should contain:
@@ -145,12 +177,18 @@ Feature: Asset configuration
       folders:
         assets      : data/app_assets
       """
-    And the folder "global/app_assets" with the following asset configurations:
-      | name         | path          |
-      | default      | set_by_parent |
-    And the folder "data/app_assets" with the following asset configurations:
-      | name         | path          | parent                           | binary          |
-      | asset1       | set_by_user   | ../../global/app_assets/default  | path_to/bin.exe |
+    And a file named "data/app_assets/000default/asset.conf" with:
+      """
+      ---
+      path: set_by_parent
+      foo: bar
+      """
+    And a file named "data/app_assets/asset1/asset.conf" with:
+      """
+      ---
+      binary: path_to/bin.exe
+      path: set_by_user
+      """
     When I run `basic_app list --type=app_asset`
     Then the exit status should be 0
     And its output should not match /^WARN/
@@ -158,12 +196,16 @@ Feature: Asset configuration
       """
       path: set_by_user
       """
+    And the output should contain:
+      """
+      foo: bar
+      """
     And the output should not contain:
       """
       path: set_by_parent
       """
 
-  Scenario: Parent configuration missing
+  Scenario: No default asset folder
     Given a file named "basic_app.conf" with:
       """
       ---
@@ -171,17 +213,17 @@ Feature: Asset configuration
         assets      : data/app_assets
       """
     And the folder "data/app_assets" with the following asset configurations:
-      | name         | parent                           | path            |
-      | asset1       | ../../global/app_assets/default  | path_to/bin.exe |
+      | name         | foo  |
+      | asset1       | bar  |
     When I run `basic_app list --type=app_asset`
     Then the exit status should be 0
     And its output should not match /^WARN/
     And the output should contain:
       """
-      path: path_to/bin.exe
+      foo: bar
       """
 
-  Scenario: Parent configuration blank
+  Scenario: Empty default asset configuration file
     Given a file named "basic_app.conf" with:
       """
       ---
@@ -191,7 +233,7 @@ Feature: Asset configuration
     And the folder "assets" with the following asset configurations:
       | name         | parent             | path            |
       | asset1       | ../global/default  | path_to/bin.exe |
-    And a file named "global/default/asset.conf" with:
+    And a file named "assets/000default/asset.conf" with:
       """
       ---
       """

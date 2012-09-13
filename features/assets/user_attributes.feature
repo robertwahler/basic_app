@@ -52,7 +52,6 @@ Feature: Create user defined attributes
     And a file named "assets/asset1/asset.conf" with:
       """
       ---
-      parent: ../global/assets/default
       my_folder: folder name
       path: folder/{{my_folder}}/another_folder
       """

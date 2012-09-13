@@ -240,28 +240,27 @@ describe BasicApp::BaseAsset  do
 
   end
 
-  describe "parent defined attributes" do
+  describe "default asset defined attributes" do
 
     before :each do
       FileUtils.rm_rf(current_dir)
 
-      parent = <<-PARENT.unindent
+      default = <<-DEFAULT.unindent
         ---
         description: "{{path}}"
         notes: <%= File.basename(path) %>
         dog: lassie
         my_thing: <%%= thing %>
         thing: simple text
-      PARENT
+      DEFAULT
 
       config = <<-CONFIG.unindent
         ---
-        parent: ./parent
         path: "my/path"
         dog: spot
       CONFIG
 
-      write_file('parent/asset.conf', parent)
+      write_file("#{BasicApp::DEFAULT_ASSET_FOLDER}/asset.conf", default)
       write_file('test/asset.conf', config)
     end
 

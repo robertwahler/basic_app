@@ -45,10 +45,10 @@ describe BasicApp::AssetConfiguration  do
       asset.tags.should == ["favorite", "rpg"]
     end
 
-    it "should merge with parent contents replacing simple parent items" do
-      default_folder = File.join(current_dir, 'default')
+    it "should merge with default asset contents replacing simple default asset items" do
+      default_folder = File.join(current_dir, BasicApp::DEFAULT_ASSET_FOLDER)
       write_configuration(default_folder, {:tags => ["favorite", "rpg"], :hello => "planet"})
-      write_configuration(@folder, {:parent => "./default", :hello => "world"})
+      write_configuration(@folder, {:hello => "world"})
 
       asset = BasicApp::BaseAsset.new("loader")
       loader = BasicApp::AssetConfiguration.new(asset)
@@ -58,10 +58,10 @@ describe BasicApp::AssetConfiguration  do
     end
 
 
-    it "should merge with parent contents merging array items" do
-      default_folder = File.join(current_dir, 'default')
+    it "should merge with default asset merging array items" do
+      default_folder = File.join(current_dir, BasicApp::DEFAULT_ASSET_FOLDER)
       write_configuration(default_folder, {:tags => ["favorite", "rpg", "turn-based"], :hello => "planet"})
-      write_configuration(@folder, {:parent => "./default", :tags => ["favorite", "controller"], :hello => "world"})
+      write_configuration(@folder, {:tags => ["favorite", "controller"], :hello => "world"})
 
       asset = BasicApp::BaseAsset.new("loader")
       loader = BasicApp::AssetConfiguration.new(asset)
@@ -70,10 +70,10 @@ describe BasicApp::AssetConfiguration  do
       asset.tags.should == ["favorite", "rpg", "turn-based", "controller" ]
     end
 
-    it "should merge with parent contents merging arrays of targets" do
-      default_folder = File.join(current_dir, 'default')
+    it "should merge with default asset  merging arrays of targets" do
+      default_folder = File.join(current_dir, BasicApp::DEFAULT_ASSET_FOLDER)
       write_configuration(default_folder, {:targets => [{:id => 'explore', :target => 'xdg-open .', :label => 'Explore'} ], :hello => "planet", :dog => "barks"})
-      write_configuration(@folder, {:parent => "./default", :targets => [{:id => 'manual', :target => 'manual.pdf'}, {:id => 'explore', :target => 'start .'}], :hello => "world"})
+      write_configuration(@folder, {:targets => [{:id => 'manual', :target => 'manual.pdf'}, {:id => 'explore', :target => 'start .'}], :hello => "world"})
 
       asset = BasicApp::BaseAsset.new("loader")
       loader = BasicApp::AssetConfiguration.new(asset)

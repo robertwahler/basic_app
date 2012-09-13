@@ -25,11 +25,8 @@ module BasicApp
   #
   class AssetConfiguration
 
-    # user datastore folder, can override parent datastore
+    # user datastore folder
     attr_accessor :folder
-
-    # parent datastore defaults folder, read asset from here first if exists
-    attr_accessor :parent
 
     attr_reader :asset
 
@@ -67,30 +64,43 @@ module BasicApp
 
       @asset.loading = true
       begin
-        contents = load_contents(folder)
-        #logger.debug "contents: " + contents.inspect
+        # this instance will load these parents
+        parents = []
 
-        # the 'parent' setting is not merged to attributes
-        parent = contents.delete(:parent) || parent
+        contents = load_contents(folder)
+        logger.debug "folder: " + folder
+        logger.debug "contents: " + contents.inspect
+
+        # each metadata store has a default folder
+        default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
+
+        unless @asset.parents.include?(default)
+          logger.debug "adding default parent: " + default
+          parents << default if default
+          @asset.parents << default
+        end
+
+        # TODO: read metadata attribute and add those to the parents
+
 
         # initial contents, allows parents to access raw attributes
         # using simple merge to allow parent to overwrite instead of combine
         @asset.attributes = @asset.attributes.merge(contents)
 
-        if parent
-          parent_folder = File.join(parent)
+        parents.each do |parent_folder|
+          logger.debug "loading parent: " + parent_folder
           unless Pathname.new(parent_folder).absolute?
             base_folder = File.dirname(folder)
             parent_folder = File.join(base_folder, parent_folder)
           end
 
-          #logger.debug "AssetConfiguration loading parent: #{parent_folder}"
+          #logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
           parent_configuration = BasicApp::AssetConfiguration.new(@asset)
 
           begin
             parent_configuration.load(parent_folder)
           rescue Exception => e
-            logger.warn "AssetConfiguration parent configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
+            logger.warn "AssetConfiguration parent_folder configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
           end
         end
 
@@ -103,13 +113,6 @@ module BasicApp
       end
 
       @asset
-    end
-
-    def to_hash
-      result = {}
-      result.merge!(:parent => parent.folder) if parent
-      result.merge!(:attributes => @asset.attributes)
-      result
     end
 
     private
@@ -155,7 +158,7 @@ module BasicApp
       end
     end
 
-    # load the raw contents from an asset_folder, ignore parents
+    # load the raw contents from an asset_folder
     #
     # @return [Hash] of the raw text contents
     def load_contents(asset_folder)

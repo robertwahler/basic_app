@@ -11,6 +11,8 @@ require 'fileutils'
 
 module BasicApp
 
+  DEFAULT_ASSET_FOLDER = '000default'
+
   class AssetManager
 
     # @raise [Exception] unless asset_options contains base_folder or :assets if an absolute path
@@ -44,6 +46,7 @@ module BasicApp
 
       folders.sort.each do |folder|
         folder_basename = Pathname.new(folder).basename.to_s
+        next if folder_basename == DEFAULT_ASSET_FOLDER
         #logger.debug "matching folder: #{folder} using basename: #{folder_basename}"
         if filters.find {|filter| matches?(folder_basename, filter, asset_options)}
           logger.debug "match found for: #{folder_basename}"
