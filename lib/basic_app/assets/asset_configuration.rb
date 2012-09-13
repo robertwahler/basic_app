@@ -74,13 +74,33 @@ module BasicApp
         # each metadata store has a default folder
         default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
 
-        unless @asset.parents.include?(default)
-          logger.debug "adding default parent: " + default
-          parents << default if default
-          @asset.parents << default
+        if default
+          unless @asset.parents.include?(default)
+            logger.debug "adding default parent: " + default
+            parents << default
+            @asset.parents << default
+          end
         end
 
-        # TODO: read metadata attribute and add those to the parents
+        # read metadata attribute and add them to the parents
+        metadata = contents[:metadata]
+        if metadata
+          raise AssetConfigurationError.new("metadata array expected") unless metadata.is_a?(Array)
+
+          metadata.each do |metadata_folder|
+            unless Pathname.new(metadata_folder).absolute?
+              base_folder = FileUtils.pwd
+              metadata_folder = File.join(base_folder, metadata_folder, @asset.name)
+            end
+
+            unless @asset.parents.include?(metadata_folder)
+              logger.debug "adding metadata folder '#{metadata_folder}' to parents"
+              parents << metadata_folder
+              @asset.parents << metadata_folder
+            end
+
+          end
+        end
 
 
         # initial contents, allows parents to access raw attributes
@@ -174,9 +194,11 @@ module BasicApp
         if contents && contents.is_a?(Hash)
           contents.recursively_symbolize_keys!
         else
+          logger.warn "configuration load failed on: '#{file}', expected contents to be a Hash"
           {}
         end
       else
+        logger.warn "configuration load failed on: '#{file}', file not found" unless file.match(/#{BasicApp::DEFAULT_ASSET_FOLDER}/)
         {}
       end
     end

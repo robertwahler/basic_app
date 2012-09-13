@@ -12,4 +12,10 @@ module BasicApp
    end
  end
 
+ class AssetConfigurationError < StandardError
+   def initialize(message = "Asset configuration error")
+     super
+   end
+ end
+
 end

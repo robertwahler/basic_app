@@ -136,7 +136,6 @@ Feature: Asset configuration
       icon: based_on_asset1.png
       """
 
-  @wip
   Scenario: Multiple parent metadata folders defined in the default asset
     Given a file named "basic_app.conf" with:
       """
@@ -144,30 +143,74 @@ Feature: Asset configuration
       folders:
         assets: data/app_assets
       """
+    And a file named "data/app_assets/asset1/asset.conf" with:
+      """
+      ---
+      foo: bar
+      thing0: thing0
+      """
     And a file named "data/app_assets/000default/asset.conf" with:
       """
       ---
       metadata:
       - metadata/global
       - metadata/lang/en
-      path: set_by_parent
-      icon: based_on_<%= name %>.png
+      foo: bug
+      thing1: thing1
       """
-    And a file named "data/app_assets/asset1/asset.conf" with:
+    And a file named "metadata/global/asset1/asset.conf" with:
       """
       ---
-      binary: path_to/bin.exe
+      foo: bear
+      thing2: thing2
+      """
+    And a file named "metadata/global/000default/asset.conf" with:
+      """
+      ---
+      foo: cat
+      thing2: badthing
+      thing3: thing3
+      """
+    And a file named "metadata/lang/en/asset1/asset.conf" with:
+      """
+      ---
+      foo: blue
+      thing4: thing4
       """
     When I run `basic_app list --type=app_asset --verbose`
     Then the exit status should be 0
     And its output should not match /^WARN/
-    And the output should contain:
+    And its output should contain:
       """
-      path: set_by_parent
+      foo: bar
       """
-    And the output should contain:
+    And its output should contain:
       """
-      icon: based_on_asset1.png
+      thing0: thing0
+      """
+    And its output should contain:
+      """
+      thing1: thing1
+      """
+    And its output should contain:
+      """
+      thing2: thing2
+      """
+    And its output should contain:
+      """
+      thing3: thing3
+      """
+    And its output should contain:
+      """
+      thing4: thing4
+      """
+    And its output should not contain:
+      """
+      foo: bug
+      """
+    And its output should not contain:
+      """
+      thing2: badthing
       """
 
   Scenario: User configuration file overrides global configuration file
@@ -239,7 +282,7 @@ Feature: Asset configuration
       """
     When I run `basic_app list --verbose --type=app_asset`
     Then the exit status should be 0
-    And its output should not match /^WARN/
+    And its output should match /^WARN.* expected contents to be a Hash/
     And its output should contain:
       """
       path: path_to/bin.exe
