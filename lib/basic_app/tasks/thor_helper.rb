@@ -2,12 +2,12 @@ require 'pathname'
 require 'rbconfig'
 require 'basic_app'
 require 'basic_app/actions/action_helper'
-require 'condenser/views/view_helper'
+require 'basic_app/views/view_helper'
 
 module BasicApp
   module ThorHelper
     include ::BasicApp::ActionHelper
-    include ::Condenser::ViewHelper
+    include ::BasicApp::ViewHelper
 
     # main basic_app configuration setttings file
     def configuration(configuration_file=nil)

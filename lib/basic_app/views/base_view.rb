@@ -10,14 +10,14 @@ require 'pathname'
 require 'slim'
 require 'erb'
 require 'chronic'
-require 'condenser/views/view_helper'
+require 'basic_app/views/view_helper'
 
 module BasicApp
 
   # An abstract superclass for basic view/reporting functionality
   # using templates
   class BaseView
-    include Condenser::ViewHelper
+    include BasicApp::ViewHelper
 
     def initialize(items, configuration={})
       @configuration = configuration.deep_clone

@@ -1,16 +1,16 @@
 require 'spec_helper'
 
-describe Condenser::AssetConfiguration  do
+describe BasicApp::AssetConfiguration  do
 
   def write_configuration(folder, contents)
-    asset = Condenser::BaseAsset.new("asset_name")
-    asset_configuration = Condenser::AssetConfiguration.new(asset)
+    asset = BasicApp::BaseAsset.new("asset_name")
+    asset_configuration = BasicApp::AssetConfiguration.new(asset)
     # access private 'write_contents' method
     asset_configuration.send('write_contents', folder, contents)
   end
 
   before :all do
-    #Condenser::Logger::Manager.new
+    #BasicApp::Logger::Manager.new
     #Logging.appenders.stdout.level = :debug
   end
 
@@ -28,8 +28,8 @@ describe Condenser::AssetConfiguration  do
     it "should load the simple hashes" do contents = {"hi" => "there"}
       write_configuration(@folder, contents)
 
-      asset = Condenser::BaseAsset.new("loader")
-      loader = Condenser::AssetConfiguration.new(asset)
+      asset = BasicApp::BaseAsset.new("loader")
+      loader = BasicApp::AssetConfiguration.new(asset)
       loader.load(@folder)
       asset.attributes.should == {:hi => "there"}
     end
@@ -38,8 +38,8 @@ describe Condenser::AssetConfiguration  do
       contents = {:path => "path/to", :tags => ["favorite", "rpg"]}
       write_configuration(@folder, contents)
 
-      asset = Condenser::BaseAsset.new("loader")
-      loader = Condenser::AssetConfiguration.new(asset)
+      asset = BasicApp::BaseAsset.new("loader")
+      loader = BasicApp::AssetConfiguration.new(asset)
       loader.load(@folder)
       asset.path.should match(/path\/to$/)
       asset.tags.should == ["favorite", "rpg"]
@@ -50,8 +50,8 @@ describe Condenser::AssetConfiguration  do
       write_configuration(default_folder, {:tags => ["favorite", "rpg"], :hello => "planet"})
       write_configuration(@folder, {:parent => "./default", :hello => "world"})
 
-      asset = Condenser::BaseAsset.new("loader")
-      loader = Condenser::AssetConfiguration.new(asset)
+      asset = BasicApp::BaseAsset.new("loader")
+      loader = BasicApp::AssetConfiguration.new(asset)
       loader.load(@folder)
       asset.hello.should == "world"
       asset.tags.should == ["favorite", "rpg"]
@@ -63,8 +63,8 @@ describe Condenser::AssetConfiguration  do
       write_configuration(default_folder, {:tags => ["favorite", "rpg", "turn-based"], :hello => "planet"})
       write_configuration(@folder, {:parent => "./default", :tags => ["favorite", "controller"], :hello => "world"})
 
-      asset = Condenser::BaseAsset.new("loader")
-      loader = Condenser::AssetConfiguration.new(asset)
+      asset = BasicApp::BaseAsset.new("loader")
+      loader = BasicApp::AssetConfiguration.new(asset)
       loader.load(@folder)
       asset.hello.should == "world"
       asset.tags.should == ["favorite", "rpg", "turn-based", "controller" ]
@@ -75,8 +75,8 @@ describe Condenser::AssetConfiguration  do
       write_configuration(default_folder, {:targets => [{:id => 'explore', :target => 'xdg-open .', :label => 'Explore'} ], :hello => "planet", :dog => "barks"})
       write_configuration(@folder, {:parent => "./default", :targets => [{:id => 'manual', :target => 'manual.pdf'}, {:id => 'explore', :target => 'start .'}], :hello => "world"})
 
-      asset = Condenser::BaseAsset.new("loader")
-      loader = Condenser::AssetConfiguration.new(asset)
+      asset = BasicApp::BaseAsset.new("loader")
+      loader = BasicApp::AssetConfiguration.new(asset)
       loader.load(@folder)
       asset.hello.should == "world"
       asset.dog.should == "barks"

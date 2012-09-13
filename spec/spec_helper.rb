@@ -2,7 +2,7 @@ require 'basic_app'
 require 'rspec/core'
 require 'aruba/api'
 require 'basic_app/test/test_api'
-require 'condenser/core/string'
+require 'basic_app/core/string'
 
 RSpec.configure do |config|
   config.include Aruba::Api

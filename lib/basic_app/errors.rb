@@ -1,4 +1,4 @@
-module Condenser
+module BasicApp
 
  class ErbTemplateError < StandardError
    def initialize(message = "ERB template error")

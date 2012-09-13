@@ -85,7 +85,7 @@ module BasicApp
           end
 
           #logger.debug "AssetConfiguration loading parent: #{parent_folder}"
-          parent_configuration = Condenser::AssetConfiguration.new(@asset)
+          parent_configuration = BasicApp::AssetConfiguration.new(@asset)
 
           begin
             parent_configuration.load(parent_folder)

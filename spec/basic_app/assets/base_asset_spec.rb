@@ -3,7 +3,7 @@ require 'spec_helper'
 describe BasicApp::BaseAsset  do
 
   before :all do
-    #Condenser::Logger::Manager.new
+    #BasicApp::Logger::Manager.new
     #Logging.appenders.stdout.level = :debug
   end
 
@@ -173,12 +173,12 @@ describe BasicApp::BaseAsset  do
         end
 
         it "should render Mustache templates" do
-          asset = Condenser::BaseAsset.new("test_asset", {:notes => "hello world", :new_attribute => "{{notes}}"})
+          asset = BasicApp::BaseAsset.new("test_asset", {:notes => "hello world", :new_attribute => "{{notes}}"})
           asset.new_attribute.should == "hello world"
         end
 
         it "should render ERB" do
-          asset = Condenser::BaseAsset.new("test_asset", {:new_attribute => "<%= 'hello world' %>"})
+          asset = BasicApp::BaseAsset.new("test_asset", {:new_attribute => "<%= 'hello world' %>"})
           asset.new_attribute.should == "hello world"
         end
 
@@ -202,7 +202,7 @@ describe BasicApp::BaseAsset  do
 
         asset = BasicApp::BaseAsset.new("test_asset", attributes)
         asset.my_attribute = 2
-        asset.my_attribute.should == "2"
+        asset.my_attribute.should == 2
 
         my_asset = MyAsset.new("test_asset", attributes)
         my_asset.my_attribute = 2
@@ -266,7 +266,7 @@ describe BasicApp::BaseAsset  do
     end
 
     it "should not overwrite existing attributes" do
-      asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+      asset = BasicApp::BaseAsset.new(File.join(current_dir, "test"))
       asset.attributes[:dog].should == "spot"
       asset.dog.should == "spot"
 
@@ -277,13 +277,13 @@ describe BasicApp::BaseAsset  do
     describe "rendering" do
 
       it "should render simple strings" do
-        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset = BasicApp::BaseAsset.new(File.join(current_dir, "test"))
         asset.attributes[:thing].should == "simple text"
         asset.thing.should == "simple text"
       end
 
       it "should render mustache templates" do
-        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset = BasicApp::BaseAsset.new(File.join(current_dir, "test"))
         asset.path.should match(/.*\/my\/path$/)
 
         asset.attributes[:description].should == "{{path}}"
@@ -292,7 +292,7 @@ describe BasicApp::BaseAsset  do
       end
 
       it "should render ERB on initial load" do
-        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset = BasicApp::BaseAsset.new(File.join(current_dir, "test"))
         asset.attributes[:notes].should == "path"
 
         asset.path.should match(/.*\/my\/path$/)
@@ -300,7 +300,7 @@ describe BasicApp::BaseAsset  do
       end
 
       it "should render escaped ERB" do
-        asset = Condenser::BaseAsset.new(File.join(current_dir, "test"))
+        asset = BasicApp::BaseAsset.new(File.join(current_dir, "test"))
 
         asset.attributes[:my_thing].should == "<%= thing %>"
         asset.my_thing.should == "simple text"
