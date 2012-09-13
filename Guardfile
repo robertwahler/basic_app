@@ -37,6 +37,7 @@ group :cucumber do
   opts << ["--no-profile"]
   #opts << ["--tags @focus"]
   opts << ["--tags ~@wip"]
+  opts << ["--tags ~@manual"]
   opts << ["--tags ~@windows"] unless WINDOWS
   opts << ["--tags ~@posix"] if WINDOWS
 

@@ -1,7 +1,6 @@
 require 'basic_gem'
 require 'rspec/core'
 require 'aruba/api'
-require 'aruba_helper'
 
 RSpec.configure do |config|
   config.include Aruba::Api

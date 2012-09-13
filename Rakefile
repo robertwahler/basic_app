@@ -69,7 +69,12 @@ task :release => [:gemfiles]
 
 desc "Generate .gemfiles via 'git ls-files'"
 task :gemfiles do
+  exclude = [%r{^src/}]
   files = `git ls-files`
+
+  exclude.each do |regex|
+    files = files.split.reject{ |s| regex =~ s }.join("\n")
+  end
 
   filename  = File.join(File.dirname(__FILE__), '.gemfiles')
   cached_files = nil
