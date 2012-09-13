@@ -274,8 +274,8 @@ Feature: Asset configuration
         assets  : assets
       """
     And the folder "assets" with the following asset configurations:
-      | name         | parent             | path            |
-      | asset1       | ../global/default  | path_to/bin.exe |
+      | name         | path            |
+      | asset1       | path_to/bin.exe |
     And a file named "assets/000default/asset.conf" with:
       """
       ---
