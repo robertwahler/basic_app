@@ -197,7 +197,7 @@ module BasicApp
           {}
         end
       else
-        logger.warn "configuration load failed on: '#{file}', file not found" unless file.match(/#{BasicApp::DEFAULT_ASSET_FOLDER}/)
+        logger.debug "configuration load failed on: '#{file}', file not found" unless file.match(/#{BasicApp::DEFAULT_ASSET_FOLDER}/)
         {}
       end
     end
