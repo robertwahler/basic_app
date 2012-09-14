@@ -68,8 +68,8 @@ module BasicApp
         parents = []
 
         contents = load_contents(folder)
-        logger.debug "folder: " + folder
-        logger.debug "contents: " + contents.inspect
+        #logger.debug "folder: " + folder
+        #logger.debug "contents: " + contents.inspect
 
         # initial contents, allows parents to access raw attributes
         # using simple merge to allow parent to overwrite instead of combine
