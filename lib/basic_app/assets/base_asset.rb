@@ -94,6 +94,27 @@ module BasicApp
       attributes[:tags] = value
     end
 
+    # Metadata folders, an array of folder name strings
+    #
+    # @return [Array/String] of folder names
+    def metadata
+      return @metadata if @metadata
+
+      metadata_array = []
+      return metadata_array unless attributes[:metadata]
+
+      attributes[:metadata].each do |a|
+        metadata_array << render(a)
+      end
+
+      @metadata = metadata_array unless loading
+      metadata_array
+    end
+    def metadata=(value)
+      @metadata = nil
+      attributes[:metadata] = value
+    end
+
     #
     # --- Asset attributes END here ---
     #

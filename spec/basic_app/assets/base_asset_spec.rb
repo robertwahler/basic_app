@@ -143,6 +143,27 @@ describe BasicApp::BaseAsset  do
 
     end
 
+    describe 'metadata' do
+
+      it "should be an empty array unless set" do
+        @asset.attributes[:metadata].should be_nil
+        @asset.metadata.should be_empty
+      end
+
+      it "should render mustache templates" do
+        @asset.metadata = ["This is a {{name}}"]
+        @asset.attributes[:metadata].first.should == "This is a {{name}}"
+        @asset.metadata.first.should == "This is a test_asset"
+      end
+
+      it "should render ERB" do
+        @asset.metadata = ["This is a <%= name %>"]
+        @asset.attributes[:metadata].first.should == "This is a <%= name %>"
+        @asset.metadata.first.should == "This is a test_asset"
+      end
+
+    end
+
   end
 
   describe 'user defined attributes' do

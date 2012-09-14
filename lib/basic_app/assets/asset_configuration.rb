@@ -71,6 +71,10 @@ module BasicApp
         logger.debug "folder: " + folder
         logger.debug "contents: " + contents.inspect
 
+        # initial contents, allows parents to access raw attributes
+        # using simple merge to allow parent to overwrite instead of combine
+        @asset.attributes = @asset.attributes.merge(contents)
+
         # each metadata store has a default folder
         default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
 
@@ -101,11 +105,6 @@ module BasicApp
 
           end
         end
-
-
-        # initial contents, allows parents to access raw attributes
-        # using simple merge to allow parent to overwrite instead of combine
-        @asset.attributes = @asset.attributes.merge(contents)
 
         parents.each do |parent_folder|
           logger.debug "loading parent: " + parent_folder
