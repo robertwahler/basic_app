@@ -87,22 +87,19 @@ module BasicApp
         end
 
         # read metadata attribute and add them to the parents
-        metadata = contents[:metadata]
-        if metadata
-          raise AssetConfigurationError.new("metadata array expected") unless metadata.is_a?(Array)
+        metadata = @asset.metadata
+        raise AssetConfigurationError.new("metadata array expected") unless metadata.is_a?(Array)
 
-          metadata.each do |metadata_folder|
-            unless Pathname.new(metadata_folder).absolute?
-              base_folder = FileUtils.pwd
-              metadata_folder = File.join(base_folder, metadata_folder, @asset.name)
-            end
+        metadata.each do |metadata_folder|
+          unless Pathname.new(metadata_folder).absolute?
+            base_folder = FileUtils.pwd
+            metadata_folder = File.join(base_folder, metadata_folder, @asset.name)
+          end
 
-            unless @asset.parents.include?(metadata_folder)
-              logger.debug "adding metadata folder '#{metadata_folder}' to parents"
-              parents << metadata_folder
-              @asset.parents << metadata_folder
-            end
-
+          unless @asset.parents.include?(metadata_folder)
+            logger.debug "adding metadata folder '#{metadata_folder}' to parents"
+            parents << metadata_folder
+            @asset.parents << metadata_folder
           end
         end
 
