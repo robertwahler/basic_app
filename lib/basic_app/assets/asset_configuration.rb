@@ -93,8 +93,11 @@ module BasicApp
         metadata.each do |metadata_folder|
           unless Pathname.new(metadata_folder).absolute?
             base_folder = FileUtils.pwd
-            metadata_folder = File.join(base_folder, metadata_folder, @asset.name)
+            metadata_folder = File.join(base_folder, metadata_folder)
           end
+
+          # append the asset name to the path
+          metadata_folder = File.join(metadata_folder, @asset.name)
 
           unless @asset.parents.include?(metadata_folder)
             logger.debug "adding metadata folder '#{metadata_folder}' to parents"
