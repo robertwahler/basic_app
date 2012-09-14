@@ -104,7 +104,7 @@ module BasicApp
       return metadata_array unless attributes[:metadata]
 
       attributes[:metadata].each do |a|
-        metadata_array << render(a)
+        metadata_array << render(a) unless a.nil? || a.strip.empty?
       end
 
       @metadata = metadata_array unless loading

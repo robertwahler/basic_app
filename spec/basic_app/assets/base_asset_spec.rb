@@ -162,6 +162,13 @@ describe BasicApp::BaseAsset  do
         @asset.metadata.first.should == "This is a test_asset"
       end
 
+      it "should remove blank entries" do
+        @asset.metadata = ["This is a <%= name %>", "", " ", nil]
+        @asset.attributes[:metadata].first.should == "This is a <%= name %>"
+        @asset.metadata.first.should == "This is a test_asset"
+        @asset.metadata.length.should == 1
+      end
+
     end
 
   end
