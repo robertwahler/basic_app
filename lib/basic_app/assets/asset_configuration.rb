@@ -185,7 +185,7 @@ module BasicApp
       if File.exists?(file)
         contents = YAML.load(
           begin
-            ERB.new(File.open(file, "rb").read).result(@asset.get_binding)
+            ERB.new(File.open(file, "rb").read, nil, '-').result(@asset.get_binding)
           rescue Exception => e
             raise ErbTemplateError, e.message
           end

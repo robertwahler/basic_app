@@ -237,7 +237,7 @@ module BasicApp
       return template unless template.is_a?(String)
 
       begin
-        result = ERB.new(template).result(get_binding)
+        result = ERB.new(template, nil, '-').result(get_binding)
       rescue Exception => e
         raise ErbTemplateError, e.message
       end

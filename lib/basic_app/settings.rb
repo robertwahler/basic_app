@@ -64,7 +64,7 @@ module BasicApp
       if config && File.exists?(config)
         # load options from the config file, overwriting hard-coded defaults
         logger.debug "reading configuration file: #{config}"
-        config_contents = YAML.load(ERB.new(File.open(config, "rb").read).result)
+        config_contents = YAML.load(ERB.new(File.open(config, "rb").read, nil, '-').result)
         configuration.merge!(config_contents.symbolize_keys!) if config_contents && config_contents.is_a?(Hash)
       else
         # user specified a config file?, no error if user did not specify config file
