@@ -1,4 +1,5 @@
 require 'logging'
+require 'erb'
 include Logging.globally
 
 module BasicApp
@@ -11,7 +12,11 @@ module BasicApp
         options = configuration[:options] || {}
 
         if config_filename && yaml_key && configuration.has_key?(yaml_key)
-          Logging::Config::YamlConfigurator.load(config_filename, yaml_key.to_s)
+          io = StringIO.new
+          io << ERB.new(File.open(config_filename, "rb").read, nil, '-').result
+          io.seek 0
+
+          Logging::Config::YamlConfigurator.new(io, yaml_key.to_s).load
         else
           # setup a default root level STDOUT logger
           format = {:pattern => '%-5l %c: %m\n'}

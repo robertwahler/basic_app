@@ -162,7 +162,7 @@ Feature: Logging to console and log files
             name          : logfile
             level         : debug
             truncate      : true
-            filename      : 'temp.log'
+            filename      : temp.log
             layout:
               type        : Pattern
               pattern     : '[%d] %l %c : %m\n'
@@ -177,7 +177,7 @@ Feature: Logging to console and log files
       DEBUG
       """
 
-  Scenario: Override default STDOUT appender level with a config file for debug output
+  Scenario: Override default STDOUT appender level with a config file for debug output using ERB
     Given a file named "basic_app.conf" with:
       """
       ---
@@ -197,15 +197,15 @@ Feature: Logging to console and log files
               color_scheme: default
           - type          : File
             name          : logfile
-            level         : info
+            level         : debug
             truncate      : true
-            filename      : 'temp.log'
+            filename      : <%= (1 == 0) ? 'bar.log' : 'temp.log' %>
             layout:
               type        : Pattern
               pattern     : '[%d] %l %c : %m\n'
       """
-    When I run `basic_app help --verbose`
-    Then the output should contain:
+    When I run `basic_app help`
+    Then the output should not contain:
       """
       DEBUG
       """

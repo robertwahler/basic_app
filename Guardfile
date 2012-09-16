@@ -48,6 +48,10 @@ group :cucumber do
 
     watch(%r{^features/.+\.feature$})
 
+    # main
+    watch(%r{^lib/basic_app/logger.rb$})      { |m| "features/logger.feature" }
+    watch(%r{^lib/basic_app/settings.rb$})    { |m| "features/settings.feature" }
+
     # actions
     watch(%r{^lib/basic_app/actions/(.+)_action.rb$})         { |m| "features/actions/#{m[1]}.feature" }
 

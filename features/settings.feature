@@ -162,7 +162,7 @@ Feature: Configuration via YAML
       :color=>"ALWAYS"
       """
 
-  Scenario: Processing ERB
+  Scenario: Processing ERB values
     Given a file named "erb.conf" with:
       """
       ---
@@ -173,6 +173,46 @@ Feature: Configuration via YAML
     Then the output should contain:
       """
       :color=>"ALWAYS"
+      """
+
+  Scenario: Processing ERB logic
+    Given a file named "erb.conf" with:
+      """
+      ---
+      <% if 1 == 1 %>
+      foo: <%= "bar" %>
+      <% else %>
+      foo: <%= "baz" %>
+      <% end %>
+      """
+    When I run `basic_app list --verbose --config erb.conf`
+    Then the output should contain:
+      """
+      foo=>"bar"
+      """
+    Then the output should not contain:
+      """
+      foo=>"baz"
+      """
+
+  Scenario: Processing ERB logic in trim mode
+    Given a file named "erb.conf" with:
+      """
+      ---
+      <% if 1 == 1 -%>
+      foo: <%= "bar" %>
+      <% else -%>
+      foo: <%= "baz" %>
+      <% end -%>
+      """
+    When I run `basic_app list --verbose --config erb.conf`
+    Then the output should contain:
+      """
+      foo=>"bar"
+      """
+    Then the output should not contain:
+      """
+      foo=>"baz"
       """
 
   Scenario: Reading default valid config files ordered by priority
