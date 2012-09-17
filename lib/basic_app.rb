@@ -26,7 +26,7 @@ module BasicApp
 
 end
 
-module BasicGem
+module BasicApp
 
   # mixin for determining OS specific methods
   module Os

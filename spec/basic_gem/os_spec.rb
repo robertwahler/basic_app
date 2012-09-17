@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe BasicGem::Os do
-  include BasicGem::Os
+describe BasicApp::Os do
+  include BasicApp::Os
 
   context 'when posix', :posix => true do
 

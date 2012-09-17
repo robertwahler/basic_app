@@ -5,7 +5,7 @@ require 'basic_app/test/test_api'
 require 'basic_app/core/string'
 
 RSpec.configure do |config|
-  include BasicGem::Os
+  include BasicApp::Os
   config.include Aruba::Api
   config.include BasicApp::TestApi
   config.filter_run :focus => true
