@@ -112,6 +112,8 @@ Set the merge type for the files we want to ignore in .git/info/attributes. You
 could specify .gitattributes instead of .git/info/attributes but then if your
 new gem is forked, your forked repos will miss out on document merges.
 
+    mkdir .git/info
+
     echo "README.md merge=keep_local_copy" >> .git/info/attributes
     echo "HISTORY.md merge=keep_local_copy" >> .git/info/attributes
     echo "TODO.md merge=keep_local_copy" >> .git/info/attributes
