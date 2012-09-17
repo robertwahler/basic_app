@@ -87,9 +87,9 @@ the content is non-trivial.
 Replace TODO's and update documentation
 ---------------------------------------
 
-* Replace README.markdown
-* Replace HISTORY.markdown
-* Replace TODO.markdown
+* Replace README.md
+* Replace HISTORY.md
+* Replace TODO.md
 * Replace LICENSE
 * Replace VERSION
 * Modify .gemspec, add author information and replace the TODO's
@@ -111,9 +111,9 @@ Set the merge type for the files we want to ignore in .git/info/attributes. You
 could specify .gitattributes instead of .git/info/attributes but then if your
 new gem is forked, your forked repos will miss out on document merges.
 
-    echo "README.markdown merge=keep_local_copy" >> .git/info/attributes
-    echo "HISTORY.markdown merge=keep_local_copy" >> .git/info/attributes
-    echo "TODO.markdown merge=keep_local_copy" >> .git/info/attributes
+    echo "README.md merge=keep_local_copy" >> .git/info/attributes
+    echo "HISTORY.md merge=keep_local_copy" >> .git/info/attributes
+    echo "TODO.md merge=keep_local_copy" >> .git/info/attributes
     echo "LICENSE merge=keep_local_copy" >> .git/info/attributes
     echo "VERSION merge=keep_local_copy" >> .git/info/attributes
 

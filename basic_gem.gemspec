@@ -59,7 +59,7 @@ Gem::Specification.new do |s|
 
   s.rdoc_options     = [
                          '--title', 'BasicGem Documentation',
-                         '--main', 'README.markdown',
+                         '--main', 'README.md',
                          '--line-numbers',
                          '--inline-source'
                        ]
