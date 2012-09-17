@@ -6,6 +6,6 @@ features/step_definitions/**/*.rb
 features/support/env.rb
 -
 LICENSE
-HISTORY.markdown
-TODO.markdown
+HISTORY.md
+TODO.md
 VERSION
