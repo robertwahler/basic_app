@@ -3,10 +3,11 @@ require 'rspec/core'
 require 'aruba/api'
 
 RSpec.configure do |config|
+  include BasicGem::Os
   config.include Aruba::Api
   config.filter_run :focus => true
-  config.filter_run_excluding(:posix => true) if BasicGem::WINDOWS
-  config.filter_run_excluding(:windows => true) unless BasicGem::WINDOWS
+  config.filter_run_excluding(:posix => true) unless posix?
+  config.filter_run_excluding(:windows => true) unless windows?
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
 
