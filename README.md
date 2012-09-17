@@ -104,9 +104,10 @@ Commit moves now so git will see them as renames
 Replace TODO's and update documentation
 ---------------------------------------
 
-* Replace README.markdown
-* Replace HISTORY.markdown
-* Replace TODO.markdown
+* Replace README.md
+* Replace HISTORY.md
+* Replace TODO.md
+* Replace CONTRIBUTING.md
 * Replace LICENSE
 * Replace VERSION
 * Modify .gemspec, add author information and replace the TODO's
@@ -133,11 +134,9 @@ Set the merge type for the files we want to ignore in .git/info/attributes. You
 could specify .gitattributes instead of .git/info/attributes but then if your
 new gem is forked, your forked repos will miss out on document merges.
 
-    mkdir .git/info
-
-    echo "README.markdown merge=keep_local_copy" >> .git/info/attributes
-    echo "HISTORY.markdown merge=keep_local_copy" >> .git/info/attributes
-    echo "TODO.markdown merge=keep_local_copy" >> .git/info/attributes
+    echo "README.md merge=keep_local_copy" >> .git/info/attributes
+    echo "HISTORY.md merge=keep_local_copy" >> .git/info/attributes
+    echo "TODO.md merge=keep_local_copy" >> .git/info/attributes
     echo "LICENSE merge=keep_local_copy" >> .git/info/attributes
     echo "VERSION merge=keep_local_copy" >> .git/info/attributes
 
@@ -189,15 +188,16 @@ Rake tasks
 
 bundle exec rake -T
 
-    rake build         # Build oct-0.0.1.gem into the pkg directory
-    rake doc:clean     # Remove generated documenation
-    rake doc:generate  # Generate YARD Documentation
-    rake cucumber      # Run Cucumber features
-    rake install       # Build and install oct-0.0.1.gem into system gems
-    rake release       # Create tag v0.0.1 and build and push oct-0.0.1.gem to Rubygems
-    rake spec          # Run specs
-    rake test          # Run specs and cucumber
-
+    rake build             # Build oct-0.0.1.gem into the pkg directory
+    rake cucumber          # Run Cucumber features
+    rake doc:clean         # Remove generated documenation
+    rake doc:generate      # Generate YARD Documentation
+    rake doc:undocumented  # List undocumented objects
+    rake gemfiles          # Generate .gemfiles via 'git ls-files'
+    rake install           # Build and install oct-0.0.1.gem into system gems
+    rake release           # Create tag v0.0.2 and build and push oct-0.0.1.gem to Rubygems
+    rake spec              # Run RSpec
+    rake test              # Run specs, both RSpec and Cucumber
 
 Autotesting with Guard
 ----------------------
