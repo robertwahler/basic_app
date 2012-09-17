@@ -9,6 +9,7 @@ module BasicApp
   AVAILABLE_ACTIONS = %w[help list task]
 
   class App
+    include BasicApp::Os
 
     # bin wrapper option parser object
     attr_accessor :option_parser
@@ -18,6 +19,24 @@ module BasicApp
       @options = @configuration[:options] || {}
       @argv = argv.dup
       $stdout.sync = true
+
+      if STDOUT.isatty || (@options[:color] == 'ALWAYS')
+        Term::ANSIColor::coloring = @options[:color]
+
+        if @options[:color] && windows?
+          unless ENV['ANSICON']
+            begin
+              require 'Win32/Console/ANSI'
+            rescue LoadError
+              Term::ANSIColor::coloring = false
+              STDERR.puts 'WARNING: You must "gem install win32console" (1.2.0 or higher) or use the ANSICON driver (https://github.com/adoxa/ansicon) to get color output on MRI/Windows'
+            end
+          end
+        end
+
+      else
+        Term::ANSIColor::coloring = false
+      end
 
       config_filename = @configuration[:configuration_filename]
       BasicApp::Logger::Manager.new(config_filename, :logging, @configuration)

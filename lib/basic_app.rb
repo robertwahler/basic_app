@@ -1,13 +1,4 @@
-# require all files here
 require 'rbconfig'
-require 'basic_app/core'
-require 'basic_app/errors'
-require 'basic_app/assets'
-require 'basic_app/views'
-require 'basic_app/actions'
-require 'basic_app/app'
-require 'basic_app/settings'
-require 'basic_app/logger'
 
 # Master namespace
 module BasicApp
@@ -88,3 +79,12 @@ module BasicApp
 
   end
 end
+
+require 'basic_app/core'
+require 'basic_app/errors'
+require 'basic_app/assets'
+require 'basic_app/views'
+require 'basic_app/actions'
+require 'basic_app/app'
+require 'basic_app/settings'
+require 'basic_app/logger'

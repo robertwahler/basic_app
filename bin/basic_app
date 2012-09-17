@@ -2,7 +2,6 @@
 
 require 'basic_app'
 require 'optparse'
-require 'term/ansicolor'
 require 'fileutils'
 
 available_actions = BasicApp::AVAILABLE_ACTIONS
@@ -85,29 +84,7 @@ end
 
 # configuration from config file, if it exists, will not overwrite command line
 settings = BasicApp::Settings.new(FileUtils.pwd, options)
-color = settings.options[:color]
 
-# add summary of general options for use by action help commands
-configuration = settings.to_hash
-
-if STDOUT.isatty || (color == 'ALWAYS')
-  Term::ANSIColor::coloring = color
-
-  if color && BasicApp::WINDOWS
-    unless ENV['ANSICON']
-      begin
-        require 'Win32/Console/ANSI'
-      rescue LoadError
-        Term::ANSIColor::coloring = false
-        STDERR.puts 'WARNING: You must "gem install win32console" (1.2.0 or higher) or use the ANSICON driver (https://github.com/adoxa/ansicon) to get color output on MRI/Windows'
-      end
-    end
-  end
-
-else
-  Term::ANSIColor::coloring = false
-end
-
-app = BasicApp::App.new(argv, configuration)
+app = BasicApp::App.new(argv, settings.to_hash)
 app.option_parser = optparser
 app.execute
