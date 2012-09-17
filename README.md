@@ -90,6 +90,7 @@ Replace TODO's and update documentation
 * Replace README.md
 * Replace HISTORY.md
 * Replace TODO.md
+* Replace CONTRIBUTING.md
 * Replace LICENSE
 * Replace VERSION
 * Modify .gemspec, add author information and replace the TODO's
@@ -114,6 +115,7 @@ new gem is forked, your forked repos will miss out on document merges.
     echo "README.md merge=keep_local_copy" >> .git/info/attributes
     echo "HISTORY.md merge=keep_local_copy" >> .git/info/attributes
     echo "TODO.md merge=keep_local_copy" >> .git/info/attributes
+    echo "CONTRIBUTING.md merge=keep_local_copy" >> .git/info/attributes
     echo "LICENSE merge=keep_local_copy" >> .git/info/attributes
     echo "VERSION merge=keep_local_copy" >> .git/info/attributes
 
