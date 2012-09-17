@@ -5,11 +5,12 @@ require 'basic_app/test/test_api'
 require 'basic_app/core/string'
 
 RSpec.configure do |config|
+  include BasicGem::Os
   config.include Aruba::Api
   config.include BasicApp::TestApi
   config.filter_run :focus => true
-  config.filter_run_excluding(:posix => true) if BasicApp::WINDOWS
-  config.filter_run_excluding(:windows => true) unless BasicApp::WINDOWS
+  config.filter_run_excluding(:posix => true) unless posix?
+  config.filter_run_excluding(:windows => true) unless windows?
   config.run_all_when_everything_filtered = true
   config.treat_symbols_as_metadata_keys_with_true_values = true
 

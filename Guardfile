@@ -19,11 +19,14 @@ group :rspec do
     watch(%r{^spec/.+_spec\.rb$})
     watch('spec/spec_helper.rb')                              { "spec" }
 
+    # root folder
+    watch(%r{^lib/basic_gem.rb$})                             { "spec/basic_gem" }
+
     # ex: lib/app_name/views.rb -> spec/app_name/views_spec.rb
-    watch(%r{^lib/(.+)/(.+)\.rb$})                                 { |m| "spec/#{m[1]}/#{m[2]}_spec.rb" }
+    watch(%r{^lib/(.+)/(.+)\.rb$})                            { |m| "spec/#{m[1]}/#{m[2]}_spec.rb" }
 
     # ex: lib/app_name/views/view_helper.rb -> spec/app_name/views/view_helper_spec.rb
-    watch(%r{^lib/(.+)/(.+)/(.+)\.rb$})                                 { |m| "spec/#{m[1]}/#{m[2]}/#{m[3]}_spec.rb" }
+    watch(%r{^lib/(.+)/(.+)/(.+)\.rb$})                       { |m| "spec/#{m[1]}/#{m[2]}/#{m[3]}_spec.rb" }
   end
 end
 
