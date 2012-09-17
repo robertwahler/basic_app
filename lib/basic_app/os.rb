@@ -73,4 +73,3 @@ module BasicApp
     include BasicApp::Os
   end
 end
-

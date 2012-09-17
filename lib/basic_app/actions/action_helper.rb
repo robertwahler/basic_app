@@ -8,11 +8,12 @@ module BasicApp
     def ruby_binary(opt={:flags => [:no_console_window]})
       flags = opt[:flags] || []
       path = File.join(RbConfig::CONFIG['bindir'], RbConfig::CONFIG['ruby_install_name'])
+      os_helper = BasicApp::OsHelper.new
 
       # Childprocess/CreateProcess on Windows treats .exe different than other binaries.
       # To avoid using cmd.exe to lanuch Ruby, make sure an exe extension is set.  See
       # the Childprocess source for more information
-      if flags.include?(:no_console_window) && windows?
+      if flags.include?(:no_console_window) && os_helper.windows?
         binary = File.basename(path)
         dirname = File.dirname(path)
         wpath = File.join(dirname, 'ruby.exe')
@@ -29,15 +30,12 @@ module BasicApp
 
     def shell_quote(string)
       return "" if string.nil? or string.empty?
-      if windows?
+
+      if BasicApp::OsHelper.new.windows?
         %{"#{string}"}
       else
         string.split("'").map{|m| "'#{m}'" }.join("\\'")
       end
-    end
-
-    def windows?
-      RbConfig::CONFIG['host_os'] =~ /mswin|mingw/i
     end
 
     # @return[String] the relative path from the CWD
@@ -47,7 +45,7 @@ module BasicApp
       path = Pathname.new(File.expand_path(path, FileUtils.pwd))
       cwd = Pathname.new(FileUtils.pwd)
 
-      if windows?
+      if BasicApp::OsHelper.new.windows?
         # c:/home D:/path/here will faile with ArgumentError: different prefix
         return path.to_s if path.to_s.capitalize[0] != cwd.to_s.capitalize[0]
       end

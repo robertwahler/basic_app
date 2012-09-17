@@ -3,8 +3,7 @@ module BasicApp
 
     # cross platform `which` command
     def which(binary)
-      os_helper = BasicApp::OsHelper.new
-      separator = os_helper.windows? ? ';' : ':'
+      separator = BasicApp::OsHelper.new.windows? ? ';' : ':'
       paths = ENV['PATH'].split(separator)
       paths.each do |path|
         fullpath = File.join(path, binary)
