@@ -1,10 +1,4 @@
 module BasicApp
-  class OsHelper
-    include BasicApp::Os
-  end
-end
-
-module BasicApp
   module TestApi
 
     # cross platform `which` command

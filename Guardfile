@@ -22,6 +22,10 @@ group :rspec do
     # root folder
     watch(%r{^lib/basic_app.rb$})                             { "spec/basic_gem" }
 
+    # lib folder
+    watch(%r{^lib/basic_app/os.rb$})                          { "spec/basic_gem/os_spec.rb" }
+    watch(%r{^lib/basic_app/settins.rb$})                     { "spec/basic_app/settings_spec.rb" }
+
     # ex: lib/app_name/views.rb -> spec/app_name/views_spec.rb
     watch(%r{^lib/(.+)/(.+)\.rb$})                            { |m| "spec/#{m[1]}/#{m[2]}_spec.rb" }
 
