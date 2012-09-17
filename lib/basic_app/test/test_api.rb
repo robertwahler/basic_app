@@ -1,9 +1,16 @@
 module BasicApp
+  class OsHelper
+    include BasicApp::Os
+  end
+end
+
+module BasicApp
   module TestApi
 
     # cross platform `which` command
     def which(binary)
-      separator = BasicApp::WINDOWS ? ';' : ':'
+      os_helper = BasicApp::OsHelper.new
+      separator = os_helper.windows? ? ';' : ':'
       paths = ENV['PATH'].split(separator)
       paths.each do |path|
         fullpath = File.join(path, binary)
