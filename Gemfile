@@ -4,5 +4,6 @@ source "http://rubygems.org"
 gemspec
 
 group :development do
-  gem 'libnotify', :platforms => :ruby    # MRI, Rubinius but not Windows
+  gem 'libnotify', :platforms => :ruby    # Notify support, MRI, Rubinius but not Windows
+  gem 'rb-inotify', :platforms => :ruby   # Listen support, MRI, Rubinius but not Windows
 end
