@@ -170,7 +170,8 @@ Feature: Configuration via YAML
         color: <%= "ALWAYS" %>
       """
     When I run `basic_app list --verbose --config erb.conf`
-    Then the output should contain:
+    Then the exit status should be 0
+    And the output should contain:
       """
       :color=>"ALWAYS"
       """
@@ -186,7 +187,8 @@ Feature: Configuration via YAML
       <% end %>
       """
     When I run `basic_app list --verbose --config erb.conf`
-    Then the output should contain:
+    Then the exit status should be 0
+    And the output should contain:
       """
       foo=>"bar"
       """
@@ -206,13 +208,27 @@ Feature: Configuration via YAML
       <% end -%>
       """
     When I run `basic_app list --verbose --config erb.conf`
-    Then the output should contain:
+    Then the exit status should be 0
+    And the output should contain:
       """
       foo=>"bar"
       """
     Then the output should not contain:
       """
       foo=>"baz"
+      """
+
+  Scenario: Processing ERB with BasicApp::Os included
+    Given a file named "erb.conf" with:
+      """
+      ---
+      foo: <%= os %>
+      """
+    When I run `basic_app list --verbose --config erb.conf`
+    Then the exit status should be 0
+    And the output should match:
+      """
+      foo=>\"\w+\"
       """
 
   Scenario: Reading default valid config files ordered by priority

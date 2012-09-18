@@ -21,6 +21,7 @@ module BasicApp
   class Settings < Hash
     include BasicApp::Extensions::MethodReader
     include BasicApp::Extensions::MethodWriter
+    include BasicApp::Os
 
     def initialize(working_dir=nil, options={})
       @working_dir = working_dir || FileUtils.pwd
@@ -30,6 +31,11 @@ module BasicApp
       super *[]
 
       self.merge!(@configuration)
+    end
+
+    # ERB binding
+    def get_binding
+      binding
     end
 
   private
@@ -64,7 +70,7 @@ module BasicApp
       if config && File.exists?(config)
         # load options from the config file, overwriting hard-coded defaults
         logger.debug "reading configuration file: #{config}"
-        config_contents = YAML.load(ERB.new(File.open(config, "rb").read, nil, '-').result)
+        config_contents = YAML.load(ERB.new(File.open(config, "rb").read, nil, '-').result(self.get_binding))
         configuration.merge!(config_contents.symbolize_keys!) if config_contents && config_contents.is_a?(Hash)
       else
         # user specified a config file?, no error if user did not specify config file

@@ -23,7 +23,8 @@ Feature: Logging to console and log files
       ---
       """
     When I run `basic_app help --verbose`
-    Then the output should contain:
+    Then the exit status should be 0
+    And the output should contain:
       """
       DEBUG
       """
@@ -34,7 +35,8 @@ Feature: Logging to console and log files
       ---
       """
     When I run `basic_app help`
-    Then the output should not contain:
+    Then the exit status should be 0
+    And the output should not contain:
       """
       DEBUG
       """
@@ -62,7 +64,8 @@ Feature: Logging to console and log files
               pattern     : '[%d] %l %c : %m\n'
       """
     When I run `basic_app help`
-    Then the output should not contain:
+    Then the exit status should be 0
+    And the output should not contain:
       """
       DEBUG
       """
@@ -93,7 +96,8 @@ Feature: Logging to console and log files
               pattern     : '[%d] %l %c : %m\n'
       """
     When I run `basic_app help --verbose`
-    Then the output should not contain:
+    Then the exit status should be 0
+    And the output should not contain:
       """
       DEBUG
       """
@@ -131,7 +135,8 @@ Feature: Logging to console and log files
               pattern     : '[%d] %l %c : %m\n'
       """
     When I run `basic_app help`
-    Then the output should contain:
+    Then the exit status should be 0
+    And the output should contain:
       """
       DEBUG
       """
@@ -168,7 +173,8 @@ Feature: Logging to console and log files
               pattern     : '[%d] %l %c : %m\n'
       """
     When I run `basic_app help`
-    Then the output should not contain:
+    Then the exit status should be 0
+    And the output should not contain:
       """
       DEBUG
       """
@@ -177,7 +183,8 @@ Feature: Logging to console and log files
       DEBUG
       """
 
-  Scenario: Override default STDOUT appender level with a config file for debug output using ERB
+  Scenario: Override default STDOUT appender level with a config file for debug
+    output using ERB with BasicApp::Os included
     Given a file named "basic_app.conf" with:
       """
       ---
@@ -199,13 +206,14 @@ Feature: Logging to console and log files
             name          : logfile
             level         : debug
             truncate      : true
-            filename      : <%= (1 == 0) ? 'bar.log' : 'temp.log' %>
+            filename      : <%= ( os == 'not_this_one') ? 'bar.log' : 'temp.log' %>
             layout:
               type        : Pattern
               pattern     : '[%d] %l %c : %m\n'
       """
     When I run `basic_app help`
-    Then the output should not contain:
+    Then the exit status should be 0
+    And the output should not contain:
       """
       DEBUG
       """

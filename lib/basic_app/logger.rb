@@ -6,6 +6,7 @@ module BasicApp
   module Logger
 
     class Manager
+      include BasicApp::Os
 
       def initialize(config_filename=nil, yaml_key=nil, configuration={})
 
@@ -13,7 +14,7 @@ module BasicApp
 
         if config_filename && yaml_key && configuration.has_key?(yaml_key)
           io = StringIO.new
-          io << ERB.new(File.open(config_filename, "rb").read, nil, '-').result
+          io << ERB.new(File.open(config_filename, "rb").read, nil, '-').result(self.get_binding)
           io.seek 0
 
           Logging::Config::YamlConfigurator.new(io, yaml_key.to_s).load
@@ -38,6 +39,12 @@ module BasicApp
         #logger.warn "warn"
         #logger.info "info"
       end
+
+      # ERB binding
+      def get_binding
+        binding
+      end
+
     end
 
   end
