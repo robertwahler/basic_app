@@ -50,15 +50,9 @@ Gem::Specification.new do |s|
 
   # guard, watches files and runs specs and features
   #
-  # Guard is locked at 1.0.3 due to high CPU usage after returning from screen
-  # lock on Ubuntu 11.04. Wait for the 1+ version of Guard to mature and listen
-  # gem fixes are applied
-  #
-  # https://github.com/guard/listen/issues/44
-  #
-  s.add_development_dependency "guard", "= 1.0.3"
-  s.add_development_dependency "guard-rspec", "~> 0.7"
-  s.add_development_dependency "guard-cucumber", "~> 0.8"
+  s.add_development_dependency "guard", "~> 1.3"
+  s.add_development_dependency "guard-rspec", "~> 1.2"
+  s.add_development_dependency "guard-cucumber", "~> 1.2"
 
   s.files        = gemfiles.split("\n")
   s.executables  = gemfiles.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
