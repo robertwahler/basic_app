@@ -63,9 +63,9 @@ group :cucumber do
     watch(%r{^lib/basic_app/actions/(.+)_action.rb$})         { |m| "features/actions/#{m[1]}.feature" }
 
     # assets
-    watch(%r{^lib/basic_app/assets/.+_asset.rb$})             { |m| "features/assets/configuration.feature features/assets/rendering.feature" }
-    watch(%r{^lib/basic_app/assets/asset_configuration.rb$})  { |m| "features/assets/configuration.feature" }
-    watch(%r{^lib/basic_app/assets/asset_accessors.rb$})      { |m| "features/assets/user_attributes.feature" }
+    watch(%r{^lib/basic_app/assets/.+_asset.rb$})             { "features/assets" }
+    watch(%r{^lib/basic_app/assets/asset_configuration.rb$})  { "features/assets" }
+    watch(%r{^lib/basic_app/assets/asset_accessors.rb$})      { "features/assets/user_attributes.feature" }
 
     # tasks
     watch(%r{^lib/basic_app/tasks/(.+)/(.+).rb$})             { |m| "features/tasks/#{m[1]}/#{m[2]}.feature" }

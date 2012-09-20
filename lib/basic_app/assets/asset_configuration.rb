@@ -68,12 +68,18 @@ module BasicApp
         parents = []
 
         contents = load_contents(folder)
-        #logger.debug "folder: " + folder
-        #logger.debug "contents: " + contents.inspect
+        logger.debug "folder: " + folder
+        logger.debug "contents: " + contents.inspect
 
-        # initial contents, allows parents to access raw attributes
-        # using simple merge to allow parent to overwrite instead of combine
-        @asset.attributes = @asset.attributes.merge(contents)
+        # Simple merge to allow parent parents to access raw attributes for ERB
+        # logic, no Arrays or Hashes are merged here except for the metadata
+        # array since they need to be combined, not overwritten
+        simple_contents = {}
+        contents.each do |key, value|
+          simple_contents[key] = value unless (value.is_a?(Hash) || (value.is_a?(Array) && (key.to_s != 'metadata')))
+        end
+        logger.debug "simple merge contents of #{folder}"
+        @asset.attributes = @asset.attributes.merge(simple_contents)
 
         # each metadata store has a default folder
         default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
@@ -113,7 +119,7 @@ module BasicApp
             parent_folder = File.join(base_folder, parent_folder)
           end
 
-          #logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
+          logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
           parent_configuration = BasicApp::AssetConfiguration.new(@asset)
 
           begin
@@ -124,6 +130,7 @@ module BasicApp
         end
 
         # combine is a deep merge with array smarts
+        logger.debug "combine merge contents of #{folder}"
         @asset.attributes = combine_contents(@asset.attributes, contents)
         @asset.create_accessors(@asset.attributes[:user_attributes])
 
