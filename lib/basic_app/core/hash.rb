@@ -15,8 +15,7 @@ class Hash
       return Hash[self.sort].to_yaml
     end
 
-    opts = {}
-    YAML::quick_emit( object_id, opts ) do |out|
+    yaml = YAML::quick_emit( object_id, {} ) do |out|
       out.map( taguri, to_yaml_style ) do |map|
         sorted_keys = keys
         sorted_keys = begin
@@ -29,7 +28,12 @@ class Hash
           map.add( k, fetch(k) )
         end
       end
-    end.gsub(/\s+$/, '')  # trailing whitespace removal
+    end
+    # trailing whitespace removal
+    yaml = yaml.gsub(/\s+$/, '')
+    # add EOF newline if needed
+    yaml = yaml + "\n" if yaml && (yaml[-1,1] != "\n")
+
   end
 
   # active_support hash key functions
