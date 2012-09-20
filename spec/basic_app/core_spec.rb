@@ -42,11 +42,11 @@ describe "Core" do
 
 
       it "should convert a hash of symbolized keys to sorted YAML" do
-        @hash_symbols.to_conf.should match(/---\s?\n:options:\s?\n  :verbose: false\n:repos:\s?\n  :repo1:\s?\n    :path: something\n:zebras: true\n/)
+        @hash_symbols.to_conf.should match(/---\n:options:\n  :verbose: false\n:repos:\n  :repo1:\n    :path: something\n:zebras: true/)
       end
 
       it "should convert a hash of stringified keys to sorted YAML" do
-        @hash_strings.to_conf.should match(/---\s?\noptions:\s?\n  verbose: false\nrepos:\s?\n  repo1:\s?\n    path: something\nzebras: true\n/)
+        @hash_strings.to_conf.should match(/---\noptions:\n  verbose: false\nrepos:\n  repo1:\n    path: something\nzebras: true/)
       end
 
       # Ruby 1.9+

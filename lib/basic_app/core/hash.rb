@@ -29,7 +29,7 @@ class Hash
           map.add( k, fetch(k) )
         end
       end
-    end
+    end.gsub(/\s+$/, '')  # trailing whitespace removal
   end
 
   # active_support hash key functions
