@@ -71,68 +71,70 @@ module BasicApp
         logger.debug "folder: " + folder
         logger.debug "contents: " + contents.inspect
 
-        # Simple merge to allow parent parents to access raw attributes for ERB
-        # logic, no Arrays or Hashes are merged here except for the metadata
-        # array since they need to be combined, not overwritten
-        simple_contents = {}
-        contents.each do |key, value|
-          simple_contents[key] = value unless (value.is_a?(Hash) || (value.is_a?(Array) && (key.to_s != 'metadata')))
+        unless contents.empty?
+          # Simple merge to allow parent parents to access raw attributes for ERB
+          # logic, no Arrays or Hashes are merged here except for the metadata
+          # array since they need to be combined, not overwritten
+          simple_contents = {}
+          contents.each do |key, value|
+            simple_contents[key] = value unless (value.is_a?(Hash) || (value.is_a?(Array) && (key.to_s != 'metadata')))
+          end
+          logger.debug "simple merge contents of #{folder}"
+          @asset.attributes = @asset.attributes.merge(simple_contents)
+
+          # each metadata store has a default folder
+          default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
+
+          if default
+            unless @asset.parents.include?(default)
+              logger.debug "adding default parent: " + default
+              parents << default
+              @asset.parents << default
+            end
+          end
+
+          # read metadata attribute and add them to the parents
+          metadata = @asset.metadata
+          raise AssetConfigurationError.new("metadata array expected") unless metadata.is_a?(Array)
+
+          metadata.each do |metadata_folder|
+            unless Pathname.new(metadata_folder).absolute?
+              base_folder = FileUtils.pwd
+              metadata_folder = File.join(base_folder, metadata_folder)
+            end
+
+            # append the asset name to the path
+            metadata_folder = File.join(metadata_folder, @asset.name)
+
+            unless @asset.parents.include?(metadata_folder)
+              logger.debug "adding metadata folder '#{metadata_folder}' to parents"
+              parents << metadata_folder
+              @asset.parents << metadata_folder
+            end
+          end
+
+          parents.each do |parent_folder|
+            logger.debug "loading parent: " + parent_folder
+            unless Pathname.new(parent_folder).absolute?
+              base_folder = File.dirname(folder)
+              parent_folder = File.join(base_folder, parent_folder)
+            end
+
+            logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
+            parent_configuration = BasicApp::AssetConfiguration.new(@asset)
+
+            begin
+              parent_configuration.load(parent_folder)
+            rescue Exception => e
+              logger.warn "AssetConfiguration parent_folder configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
+            end
+          end
+
+          # combine is a deep merge with array smarts
+          logger.debug "combine merge contents of #{folder}"
+          @asset.attributes = combine_contents(@asset.attributes, contents)
+          @asset.create_accessors(@asset.attributes[:user_attributes])
         end
-        logger.debug "simple merge contents of #{folder}"
-        @asset.attributes = @asset.attributes.merge(simple_contents)
-
-        # each metadata store has a default folder
-        default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
-
-        if default
-          unless @asset.parents.include?(default)
-            logger.debug "adding default parent: " + default
-            parents << default
-            @asset.parents << default
-          end
-        end
-
-        # read metadata attribute and add them to the parents
-        metadata = @asset.metadata
-        raise AssetConfigurationError.new("metadata array expected") unless metadata.is_a?(Array)
-
-        metadata.each do |metadata_folder|
-          unless Pathname.new(metadata_folder).absolute?
-            base_folder = FileUtils.pwd
-            metadata_folder = File.join(base_folder, metadata_folder)
-          end
-
-          # append the asset name to the path
-          metadata_folder = File.join(metadata_folder, @asset.name)
-
-          unless @asset.parents.include?(metadata_folder)
-            logger.debug "adding metadata folder '#{metadata_folder}' to parents"
-            parents << metadata_folder
-            @asset.parents << metadata_folder
-          end
-        end
-
-        parents.each do |parent_folder|
-          logger.debug "loading parent: " + parent_folder
-          unless Pathname.new(parent_folder).absolute?
-            base_folder = File.dirname(folder)
-            parent_folder = File.join(base_folder, parent_folder)
-          end
-
-          logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
-          parent_configuration = BasicApp::AssetConfiguration.new(@asset)
-
-          begin
-            parent_configuration.load(parent_folder)
-          rescue Exception => e
-            logger.warn "AssetConfiguration parent_folder configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
-          end
-        end
-
-        # combine is a deep merge with array smarts
-        logger.debug "combine merge contents of #{folder}"
-        @asset.attributes = combine_contents(@asset.attributes, contents)
-        @asset.create_accessors(@asset.attributes[:user_attributes])
 
       ensure
         @asset.loading = false

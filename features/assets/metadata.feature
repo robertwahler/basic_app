@@ -26,8 +26,6 @@ Feature: Metadata configuration
   combine merge contents metadata/global/000default
   combine merge contents metadata/global/asset1
   simple merge contents  metadata/lang/en/asset1
-  simple merge contents  metadata/lang/en/000default
-  combine merge contents metadata/lang/en/000default
   combine merge contents metadata/lang/en/asset1
   combine merge contents data/app_assets/000default
   combine merge contents data/app_assets/asset1
