@@ -4,16 +4,15 @@ class Hash
 
   # YAML suitable for configuration files
   #
-  # returns sorted YAML if Ruby 1.8
-  # returns insertion ordered YAML on Ruby 1.9+
+  # returns sorted YAML string
   def to_conf
     unless RUBY_VERSION =~ /^1.8/
       # fix issue with strings that can end up in non UTF-8 encodings, like
       # ASCII-8BIT, force encoding so that they are not written to YAML as binary
       self.each_pair { |k,v| self[k] = ((v.is_a? String) ? v.force_encoding("UTF-8") : v)}
 
-      # allow 1.9+ to_yaml to do insertion ordered conf files
-      return to_yaml
+      # 1.9+
+      return Hash[self.sort].to_yaml
     end
 
     opts = {}
