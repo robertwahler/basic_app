@@ -74,7 +74,7 @@ module BasicApp
         # each metadata store has a default folder
         default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
 
-        if default
+        if default && File.exists?(default)
           unless @asset.parents.include?(default)
             logger.debug "adding default parent: " + default
             parents << default
