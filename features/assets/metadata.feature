@@ -117,6 +117,79 @@ Feature: Metadata configuration
       - fish0
       """
 
+  Scenario: Multiple metadata folder with missing assets
+    Given a file named "basic_app.conf" with:
+      """
+      ---
+      folders:
+        assets: assets
+      """
+    And a file named "assets/asset1/asset.conf" with:
+      """
+      ---
+      foo: bar
+      thing0: thing0
+      tags:
+      - bird0
+      - fish0
+      """
+    And a file named "assets/000default/asset.conf" with:
+      """
+      ---
+      metadata:
+      - metadata/global
+      - metadata/lang/en
+      foo: bug
+      thing1: thing1
+      tags:
+      - pig1
+      """
+    And a file named "metadata/global/000default/asset.conf" with:
+      """
+      ---
+      foo: cat
+      thing2: badthing
+      thing3: thing3
+      tags:
+      - cat3
+      """
+    And a file named "metadata/lang/en/asset1/asset.conf" with:
+      """
+      ---
+      foo: blue
+      thing4: thing4
+      tags:
+      - dog4
+      """
+    When I run `basic_app list --type=app_asset --verbose`
+    Then the exit status should be 0
+    And its output should not match /^WARN/
+    And its output should contain:
+      """
+      foo: bar
+      """
+    And its output should contain:
+      """
+      thing0: thing0
+      thing1: thing1
+      thing2: badthing
+      thing3: thing3
+      thing4: thing4
+      """
+    And its output should not contain:
+      """
+      foo: bug
+      """
+    And its output should contain:
+      """
+      tags:
+      - cat3
+      - dog4
+      - pig1
+      - bird0
+      - fish0
+      """
+
   @wip
   Scenario: The main asset can remove any parent defined attributes by setting
     'metadata: false' in main asset

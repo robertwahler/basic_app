@@ -71,6 +71,17 @@ module BasicApp
         logger.debug "folder: " + folder
         logger.debug "contents: " + contents.inspect
 
+        # each metadata store has a default folder
+        default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
+
+        if default
+          unless @asset.parents.include?(default)
+            logger.debug "adding default parent: " + default
+            parents << default
+            @asset.parents << default
+          end
+        end
+
         unless contents.empty?
           # Simple merge to allow parent parents to access raw attributes for ERB
           # logic, no Arrays or Hashes are merged here except for the metadata
@@ -81,17 +92,6 @@ module BasicApp
           end
           logger.debug "simple merge contents of #{folder}"
           @asset.attributes = @asset.attributes.merge(simple_contents)
-
-          # each metadata store has a default folder
-          default = File.join(File.expand_path('..', folder), BasicApp::DEFAULT_ASSET_FOLDER)
-
-          if default
-            unless @asset.parents.include?(default)
-              logger.debug "adding default parent: " + default
-              parents << default
-              @asset.parents << default
-            end
-          end
 
           # read metadata attribute and add them to the parents
           metadata = @asset.metadata
@@ -112,24 +112,26 @@ module BasicApp
               @asset.parents << metadata_folder
             end
           end
+        end
 
-          parents.each do |parent_folder|
-            logger.debug "loading parent: " + parent_folder
-            unless Pathname.new(parent_folder).absolute?
-              base_folder = File.dirname(folder)
-              parent_folder = File.join(base_folder, parent_folder)
-            end
-
-            logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
-            parent_configuration = BasicApp::AssetConfiguration.new(@asset)
-
-            begin
-              parent_configuration.load(parent_folder)
-            rescue Exception => e
-              logger.warn "AssetConfiguration parent_folder configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
-            end
+        parents.each do |parent_folder|
+          logger.debug "loading parent: " + parent_folder
+          unless Pathname.new(parent_folder).absolute?
+            base_folder = File.dirname(folder)
+            parent_folder = File.join(base_folder, parent_folder)
           end
 
+          logger.debug "AssetConfiguration loading parent_folder: #{parent_folder}"
+          parent_configuration = BasicApp::AssetConfiguration.new(@asset)
+
+          begin
+            parent_configuration.load(parent_folder)
+          rescue Exception => e
+            logger.warn "AssetConfiguration parent_folder configuration load failed on: '#{parent_folder}' with: '#{e.message}'"
+          end
+        end
+
+        unless contents.empty?
           # combine is a deep merge with array smarts
           logger.debug "combine merge contents of #{folder}"
           @asset.attributes = combine_contents(@asset.attributes, contents)
