@@ -117,7 +117,7 @@ Feature: Metadata configuration
       - fish0
       """
 
-  Scenario: Multiple metadata folder with missing assets
+  Scenario: Multiple metadata folders with missing assets
     Given a file named "basic_app.conf" with:
       """
       ---
