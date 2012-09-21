@@ -93,21 +93,9 @@ Feature: Metadata configuration
     And its output should contain:
       """
       thing0: thing0
-      """
-    And its output should contain:
-      """
       thing1: thing1
-      """
-    And its output should contain:
-      """
       thing2: thing2
-      """
-    And its output should contain:
-      """
       thing3: thing3
-      """
-    And its output should contain:
-      """
       thing4: thing4
       """
     And its output should not contain:
