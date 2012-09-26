@@ -50,9 +50,9 @@ Gem::Specification.new do |s|
 
   # guard, watches files and runs specs and features
   #
-  s.add_development_dependency "guard", "~> 1.3"
-  s.add_development_dependency "guard-rspec", "~> 1.2"
-  s.add_development_dependency "guard-cucumber", "~> 1.2"
+  s.add_development_dependency "guard", ">= 1.3"
+  s.add_development_dependency "guard-rspec", ">= 1.2"
+  s.add_development_dependency "guard-cucumber", ">= 1.2"
 
   s.files        = gemfiles.split("\n")
   s.executables  = gemfiles.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
