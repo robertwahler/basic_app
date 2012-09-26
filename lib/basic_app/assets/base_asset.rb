@@ -150,9 +150,13 @@ module BasicApp
       basename = File.basename(path)
       basename = basename.gsub(/\&/,' and ')
       basename = basename.downcase.strip.gsub(/ /,'_')
+      basename = basename.gsub(/-/,'_')
       basename = basename.gsub(/[^a-zA-Z_0-9]/,'')
-      basename = basename.downcase.strip.gsub(/ /,'_')
-      basename.gsub(/[_]+/,'_')
+      basename = basename.gsub(/ /,'_')
+      # compress multiple underscores to one
+      basename = basename.gsub(/[_]+/,'_')
+      # strip leading and trailing underscores
+      basename.gsub(/^_|_$/,'')
     end
 
     # @param [String/Symbol] asset_name_or_folder (nil) if folder exists, will load YAML config

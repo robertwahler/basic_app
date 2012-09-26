@@ -13,8 +13,8 @@ describe BasicApp::BaseAsset  do
       BasicApp::BaseAsset.path_to_name("/path/to a/hello  world ").should == "hello_world"
     end
 
-    it "should strip special chars # @ % * ' ! + . -" do
-      BasicApp::BaseAsset.path_to_name("/path/to a/.he@@llo' !w+orl-d'").should == "hello_world"
+    it "should strip special chars # @ % * ' ! + ." do
+      BasicApp::BaseAsset.path_to_name("/path/to a/.he@@llo' !w+orld'").should == "hello_world"
     end
 
     it "should replace '&' with '_and_'" do
@@ -23,6 +23,18 @@ describe BasicApp::BaseAsset  do
 
     it "should lowercase the name" do
       BasicApp::BaseAsset.path_to_name("d:/path/to a/Hello worlD").should == "hello_world"
+    end
+
+    it "should replace dashes with underscores" do
+      BasicApp::BaseAsset.path_to_name("/path/to/Hello-World-foo_bar").should == "hello_world_foo_bar"
+    end
+
+    it "should remove leading and trailing whitespace" do
+      BasicApp::BaseAsset.path_to_name("/path/to/ Hello-World-foo_bar __ ").should == "hello_world_foo_bar"
+    end
+
+    it "should remove leading and trailing underscores" do
+      BasicApp::BaseAsset.path_to_name("/path/to/_Hello-World-foo_bar__").should == "hello_world_foo_bar"
     end
 
   end
